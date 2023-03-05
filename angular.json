@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/frontend-angular-ssr",
+            "outputPath": "dist/frontend-angular-ssr/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -60,10 +60,12 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "frontend-angular-ssr:build:production"
+              "browserTarget": "frontend-angular-ssr:build:production",
+              "proxyConfig": "proxy.conf.js"
             },
             "development": {
-              "browserTarget": "frontend-angular-ssr:build:development"
+              "browserTarget": "frontend-angular-ssr:build:development",
+              "proxyConfig": "proxy.conf.js"
             }
           },
           "defaultConfiguration": "development"
@@ -91,8 +93,64 @@
             ],
             "scripts": []
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/frontend-angular-ssr/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "vendorChunk": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "frontend-angular-ssr:build:development",
+              "serverTarget": "frontend-angular-ssr:server:development"
+            },
+            "production": {
+              "browserTarget": "frontend-angular-ssr:build:production",
+              "serverTarget": "frontend-angular-ssr:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "frontend-angular-ssr:build:production",
+              "serverTarget": "frontend-angular-ssr:server:production"
+            },
+            "development": {
+              "browserTarget": "frontend-angular-ssr:build:development",
+              "serverTarget": "frontend-angular-ssr:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
